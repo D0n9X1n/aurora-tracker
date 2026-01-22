@@ -1,0 +1,48 @@
+{
+  "name": "northern-lights-reporter",
+  "version": "1.0.0",
+  "description": "Real-time aurora borealis visibility tracker for Seattle, WA. Live data from NOAA Space Weather Prediction Center.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "build": "node scripts/build.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "format": "prettier --write \"src/**/*.{js,css,html}\"",
+    "format:check": "prettier --check \"src/**/*.{js,css,html}\"",
+    "serve": "node server.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/D0n9X1n/northern-lights-reporter.git"
+  },
+  "keywords": [
+    "aurora",
+    "northern-lights",
+    "space-weather",
+    "noaa",
+    "real-time",
+    "seattle",
+    "weather",
+    "geomagnetic"
+  ],
+  "author": "D0n9X1n",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.54.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ]
+}
