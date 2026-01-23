@@ -7,11 +7,13 @@ Real-time aurora visibility tracker with a definitive **GO** or **NO GO** decisi
 ## Features
 
 - **Binary Decision**: GO or NO GO based on actual space physics
+- **Location-Aware**: Calculates if aurora can reach YOUR latitude
 - **Real-time Data**: DSCOVR/ACE satellite data (not delayed Kp index)
+- **NOAA OVATION Model**: Official aurora forecast (30-90 min prediction)
 - **Local Sky Check**: Cloud coverage at your GPS location
 - **Desktop & Mobile**: Responsive design works everywhere
-- **Email Alerts**: Get notified when GO conditions appear
-- **Rich Data**: 9 space weather metrics with G4 storm comparison
+- **Email Alerts**: Real-time GO alerts + daily summary reports
+- **7 Space Weather Metrics**: Bz, Speed, Pressure, Density, Bt, Clock Angle, Duration
 
 ## The Science
 
@@ -42,6 +44,7 @@ open http://localhost:8000
 ## Data Sources
 
 - **NOAA SWPC**: Real-time solar wind from DSCOVR/ACE satellites
+- **NOAA OVATION**: Official aurora probability forecast model
 - **Open-Meteo**: Cloud coverage by GPS coordinates
 
 ## Metrics Displayed
@@ -54,11 +57,11 @@ open http://localhost:8000
 | **Particle Density** | More particles = brighter aurora |
 | **Bt Field** | Total magnetic field strength |
 | **Clock Angle** | IMF direction (180° = pure south = best) |
-| **Bz Duration** | Sustained southward better than spikes |
+| **Bz Duration** | Sustained southward (60 min window) better than spikes |
 
 ## Email Alerts (Optional)
 
-Get notified when GO conditions are detected.
+Get notified when GO conditions are detected, plus daily summary reports.
 
 Create `.env` file:
 ```
@@ -72,20 +75,29 @@ EMAIL_RECIPIENTS=you@email.com
 EMAIL_COOLDOWN=60
 ```
 
+**Features:**
+- Real-time GO alerts when conditions are favorable
+- Daily summary at 8 AM PST with yesterday's aurora conditions
+
 ## Decision Logic
+
+The decision is **conservative** and **location-aware**:
 
 ```
 NO GO if:
 - Bz ≥ 0 (northward - magnetosphere closed)
+- Aurora won't reach your latitude
 - Bz weakly south with low pressure
 - Low clouds > 50%
-- Total sky clarity < 35%
+- Total sky clarity < 40%
 
 GO if:
-- Strong southward Bz + decent sky = GO
-- Moderate conditions but worth trying = GO
-- Borderline but favorable = GO (aurora is rare, take chances!)
+- Strong southward Bz that reaches your latitude + clear sky
+- Good margin between aurora visibility and your location
+- Supported by NOAA OVATION forecast
 ```
+
+Marginal cases are NO GO - we're conservative to avoid false hope.
 
 ## Screenshots
 

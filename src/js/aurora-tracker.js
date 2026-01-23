@@ -280,7 +280,7 @@ class AuroraTracker {
     // =========================================================================
     
     let goScore = 0;
-    let reasons = [];
+    const reasons = [];
     
     // How much margin do we have? (negative = aurora extends past our latitude)
     const latitudeMargin = myLat - visibleLat;
@@ -488,7 +488,7 @@ class AuroraTracker {
     auroraBar.className = `factor-fill ${similarity >= 50 ? 'high' : similarity >= 25 ? 'medium' : 'low'}`;
     document.getElementById('aurora-hint').textContent = 
       similarity >= 50 ? 'Strong conditions!' :
-      similarity >= 30 ? 'Moderate' : 'Weak';
+        similarity >= 30 ? 'Moderate' : 'Weak';
 
     // Sky factor
     document.getElementById('sky-value').textContent = `${sky}%`;
@@ -497,7 +497,7 @@ class AuroraTracker {
     skyBar.className = `factor-fill ${sky >= 60 ? 'high' : sky >= 40 ? 'medium' : 'low'}`;
     document.getElementById('sky-hint').textContent =
       sky >= 70 ? 'Clear!' :
-      sky >= 50 ? 'Partly cloudy' : 'Cloudy';
+        sky >= 50 ? 'Partly cloudy' : 'Cloudy';
   }
 
   renderAction() {
@@ -577,7 +577,7 @@ class AuroraTracker {
       document.getElementById('duration-bar').style.width = `${durPct}%`;
       document.getElementById('duration-status').textContent = 
         d.bzSouthDuration >= 30 ? '🟢 Sustained' :
-        d.bzSouthDuration >= 15 ? '🟡 Building' : '🔴 Brief';
+          d.bzSouthDuration >= 15 ? '🟡 Building' : '🔴 Brief';
     }
   }
 
@@ -691,7 +691,7 @@ class AuroraTracker {
     if (trendEl) {
       const trend = c.trend || 'unknown';
       trendEl.textContent = trend === 'clearing' ? '📈 Clearing' : 
-                            trend === 'increasing' ? '📉 Increasing' : '➡️ Stable';
+        trend === 'increasing' ? '📉 Increasing' : '➡️ Stable';
     }
   }
 

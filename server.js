@@ -733,18 +733,18 @@ const server = http.createServer(async (req, res) => {
 // Start Server
 // ============================================================================
 server.listen(PORT, () => {
-  console.log(`\n🌌 Aurora Tracker v1.0`);
+  console.log('\n🌌 Aurora Tracker v1.0');
   console.log(`📡 http://localhost:${PORT}\n`);
-  console.log(`Data sources:`);
-  console.log(`  • NOAA DSCOVR/ACE real-time solar wind`);
-  console.log(`  • NOAA OVATION aurora forecast model`);
-  console.log(`  • Open-Meteo cloud coverage\n`);
+  console.log('Data sources:');
+  console.log('  • NOAA DSCOVR/ACE real-time solar wind');
+  console.log('  • NOAA OVATION aurora forecast model');
+  console.log('  • Open-Meteo cloud coverage\n');
   
   if (EMAIL_CONFIG.enabled) {
     console.log(`📧 Email alerts: ENABLED (${EMAIL_CONFIG.recipients.length} recipients)`);
     scheduleDailySummary();
   } else {
-    console.log(`📧 Email alerts: DISABLED`);
+    console.log('📧 Email alerts: DISABLED');
   }
   console.log('');
 });
