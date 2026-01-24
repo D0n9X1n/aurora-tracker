@@ -15,6 +15,116 @@ let userLongitude = -122.3;
 let locationName = 'Seattle, WA';
 
 // =============================================================================
+// Darkness Calculation - Aurora requires dark sky!
+// =============================================================================
+
+/**
+ * Calculate sun position and determine if it's dark enough for aurora viewing.
+ * Uses simplified astronomical calculations.
+ * 
+ * @param {number} lat - Latitude in degrees
+ * @param {number} lon - Longitude in degrees
+ * @param {Date} date - Date/time to check (default: now)
+ * @returns {object} - Darkness info including isDark, sunAltitude, darkness level
+ */
+function getSunPosition(lat, lon, date = new Date()) {
+  // Convert to radians
+  const toRad = (deg) => deg * Math.PI / 180;
+  const toDeg = (rad) => rad * 180 / Math.PI;
+  
+  // Day of year
+  const start = new Date(date.getFullYear(), 0, 0);
+  const diff = date - start;
+  const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
+  
+  // Solar declination (simplified)
+  const declination = -23.45 * Math.cos(toRad((360 / 365) * (dayOfYear + 10)));
+  
+  // Time of day in hours (UTC)
+  const utcHours = date.getUTCHours() + date.getUTCMinutes() / 60;
+  
+  // Solar hour angle
+  const solarNoon = 12 - (lon / 15); // Approximate solar noon in UTC
+  const hourAngle = (utcHours - solarNoon) * 15; // 15 degrees per hour
+  
+  // Sun altitude angle
+  const latRad = toRad(lat);
+  const decRad = toRad(declination);
+  const haRad = toRad(hourAngle);
+  
+  const sinAlt = Math.sin(latRad) * Math.sin(decRad) + 
+                 Math.cos(latRad) * Math.cos(decRad) * Math.cos(haRad);
+  const altitude = toDeg(Math.asin(Math.max(-1, Math.min(1, sinAlt))));
+  
+  return {
+    altitude: Math.round(altitude * 10) / 10,
+    declination: Math.round(declination * 10) / 10,
+    hourAngle: Math.round(hourAngle)
+  };
+}
+
+/**
+ * Determine darkness level for aurora viewing
+ * @returns {object} - isDark, level, description, hoursUntilDark
+ */
+function getDarknessInfo() {
+  const sun = getSunPosition(userLatitude, userLongitude);
+  const alt = sun.altitude;
+  
+  // Darkness levels for aurora viewing:
+  // - Astronomical twilight (sun < -18°): Best - fully dark
+  // - Nautical twilight (sun < -12°): Good - dark enough for aurora
+  // - Civil twilight (sun < -6°): Marginal - bright aurora might be visible
+  // - Above horizon (sun >= -6°): Too bright - no aurora visible
+  
+  let level, description, isDark, canViewAurora;
+  
+  if (alt < -18) {
+    level = 'night';
+    description = 'Full darkness - ideal for aurora';
+    isDark = true;
+    canViewAurora = true;
+  } else if (alt < -12) {
+    level = 'nautical';
+    description = 'Nautical twilight - good for aurora';
+    isDark = true;
+    canViewAurora = true;
+  } else if (alt < -6) {
+    level = 'civil';
+    description = 'Civil twilight - only bright aurora visible';
+    isDark = false;
+    canViewAurora = true; // Marginal
+  } else if (alt < 0) {
+    level = 'horizon';
+    description = 'Sun near horizon - too bright';
+    isDark = false;
+    canViewAurora = false;
+  } else {
+    level = 'day';
+    description = `Daytime (sun ${alt > 0 ? '+' : ''}${alt}°) - aurora not visible`;
+    isDark = false;
+    canViewAurora = false;
+  }
+  
+  // Estimate hours until dark (rough calculation)
+  let hoursUntilDark = null;
+  if (!canViewAurora && alt > -12) {
+    // Sun moves ~15° per hour, need to get to -12°
+    hoursUntilDark = Math.round((alt + 12) / 15 * 10) / 10;
+    if (hoursUntilDark < 0) hoursUntilDark = null;
+  }
+  
+  return {
+    isDark,
+    canViewAurora,
+    level,
+    description,
+    sunAltitude: alt,
+    hoursUntilDark
+  };
+}
+
+// =============================================================================
 // Geolocation
 // =============================================================================
 function initGeolocation() {
@@ -139,15 +249,17 @@ class AuroraTracker {
   // ---------------------------------------------------------------------------
   // Based on real space physics, not arbitrary thresholds
   // 
-  // Key insight: Aurora requires THREE things:
-  // 1. Southward IMF (Bz < 0) - Opens magnetosphere to solar wind
-  // 2. Strong solar wind (speed + density = pressure) - Drives energy
-  // 3. Clear sky - Can actually see it
+  // Key insight: Aurora requires FOUR things:
+  // 1. DARKNESS - Can't see aurora during daylight!
+  // 2. Southward IMF (Bz < 0) - Opens magnetosphere to solar wind
+  // 3. Strong solar wind (speed + density = pressure) - Drives energy
+  // 4. Clear sky - Can actually see it
   // ---------------------------------------------------------------------------
   getDecision() {
     const d = this.data;
     const c = this.cloudData || {};
     const sky = this.getSkyScore();
+    const darkness = getDarknessInfo();
 
     // FAIL SAFE: No data = NO GO
     if (!d) {
@@ -169,6 +281,30 @@ class AuroraTracker {
     const clockAngle = d.clockAngle || 0;
     const similarity = d.similarity || 0;
     const bzDuration = d.bzSouthDuration || 0;
+
+    // =========================================================================
+    // CRITICAL: CHECK DARKNESS FIRST - Can't see aurora in daylight!
+    // =========================================================================
+    if (!darkness.canViewAurora) {
+      const timeNote = darkness.hoursUntilDark 
+        ? `Dark in ~${darkness.hoursUntilDark} hours.` 
+        : 'Check back after sunset.';
+      
+      // Still report space weather status
+      const spaceWeatherNote = bz < -5 
+        ? `Space weather is active (Bz ${bz.toFixed(1)} nT).` 
+        : 'Space weather is quiet.';
+      
+      return {
+        decision: 'NO GO',
+        class: 'no-go',
+        icon: '☀️',
+        reason: darkness.description,
+        action: `Aurora is only visible at night. ${timeNote} ${spaceWeatherNote}`,
+        confidence: 'high',
+        factors: { darkness: darkness.level, sun: `${darkness.sunAltitude}°` }
+      };
+    }
 
     // =========================================================================
     // AURORA CONDITIONS - Based on actual physics
@@ -701,6 +837,23 @@ class AuroraTracker {
     
     const visEl = document.getElementById('visible-latitude');
     if (visEl) visEl.textContent = `${this.getVisibleLatitude()}°N+`;
+    
+    // Darkness status
+    const darknessEl = document.getElementById('darkness-status');
+    if (darknessEl) {
+      const darkness = getDarknessInfo();
+      if (darkness.level === 'night') {
+        darknessEl.textContent = '🌙 Dark';
+      } else if (darkness.level === 'nautical') {
+        darknessEl.textContent = '🌑 Twilight';
+      } else if (darkness.level === 'civil') {
+        darknessEl.textContent = '🌆 Dusk';
+      } else if (darkness.hoursUntilDark) {
+        darknessEl.textContent = `☀️ ~${darkness.hoursUntilDark}h`;
+      } else {
+        darknessEl.textContent = '☀️ Day';
+      }
+    }
     
     if (this.data?.time) {
       const dataTime = new Date(this.data.time);

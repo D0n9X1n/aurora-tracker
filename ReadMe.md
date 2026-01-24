@@ -17,10 +17,11 @@ Real-time aurora visibility tracker with a definitive **GO** or **NO GO** decisi
 
 ## The Science
 
-Aurora requires three things:
-1. **Southward IMF (Bz < 0)** - Opens Earth's magnetosphere to solar wind
-2. **Strong Solar Wind** - Speed + density = energy input
-3. **Clear Sky** - You need to actually see it
+Aurora requires four things:
+1. **Darkness** - Aurora is only visible at night (sun below horizon)
+2. **Southward IMF (Bz < 0)** - Opens Earth's magnetosphere to solar wind
+3. **Strong Solar Wind** - Speed + density = energy input
+4. **Clear Sky** - You need to actually see it
 
 We use real-time **Bz field** and **solar wind data** from DSCOVR/ACE satellites instead of Kp index (which is delayed 3+ hours).
 
@@ -85,6 +86,7 @@ The decision is **conservative** and **location-aware**:
 
 ```
 NO GO if:
+- Daytime (sun above horizon - aurora not visible)
 - Bz ≥ 0 (northward - magnetosphere closed)
 - Aurora won't reach your latitude
 - Bz weakly south with low pressure
@@ -92,6 +94,7 @@ NO GO if:
 - Total sky clarity < 40%
 
 GO if:
+- Dark enough (sun below horizon)
 - Strong southward Bz that reaches your latitude + clear sky
 - Good margin between aurora visibility and your location
 - Supported by NOAA OVATION forecast

@@ -9,8 +9,9 @@
 **Purpose**: Real-time aurora visibility tracker with binary GO/NO GO decision.
 
 **Core Decision**: **GO** or **NO GO** (no middle ground!) based on:
-1. **Space Weather** - Is aurora actually happening? (Bz, speed, pressure)
-2. **Sky Conditions** - Can you see it? (cloud coverage by layer)
+1. **Darkness** - Is it night? (sun below horizon)
+2. **Space Weather** - Is aurora actually happening? (Bz, speed, pressure)
+3. **Sky Conditions** - Can you see it? (cloud coverage by layer)
 
 **Key Insight**: We use **Bz field** and real-time satellite data instead of Kp index because:
 - Kp is a 3-hour average, delayed by hours
@@ -156,9 +157,14 @@ Returns NOAA OVATION aurora forecast model data.
 
 ### Binary GO / NO GO Rules (Location-Aware)
 
-The decision logic is **conservative** and **latitude-aware** - aurora must reach your location.
+The decision logic is **conservative**, **latitude-aware**, and **time-aware** - aurora must reach your location and it must be dark.
 
 ```javascript
+// STEP 0: Calculate darkness (sun position)
+sunAltitude = calculateSunPosition(lat, lon, time)
+if (sunAltitude > 0)      → NO GO  // Daytime - aurora not visible
+if (sunAltitude > -6)     → MARGINAL  // Civil twilight - maybe visible
+
 // STEP 1: Calculate visible latitude based on Bz and G-Scale
 visibleLat = getVisibleLatitude(bz, gScale, speed)
 // G5: 30°N, G4: 35°N, G3: 45°N, G2: 50°N, G1: 55°N
