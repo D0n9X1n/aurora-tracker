@@ -104,11 +104,15 @@ Marginal cases are NO GO - we're conservative to avoid false hope.
 
 ## Screenshots
 
-### Desktop (2-column layout)
+### Desktop
 Decision card stays visible while scrolling through data.
+
+![Aurora Tracker Desktop - GO Decision](public/assets/screenshot-desktop.png)
 
 ### Mobile
 All information in single column, touch-friendly tooltips.
+
+![Aurora Tracker Mobile](public/assets/screenshot-mobile.png)
 
 ## Development
 
