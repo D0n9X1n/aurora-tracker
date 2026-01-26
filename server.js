@@ -1029,9 +1029,21 @@ const server = http.createServer(async (req, res) => {
   }
 
   filePath = path.normalize(filePath);
-  if (!filePath.startsWith(__dirname)) {
-    res.writeHead(400);
-    res.end('Bad Request');
+  
+  // Security: Only allow files from specific directories
+  const allowedDirs = [
+    path.join(__dirname, 'src'),
+    path.join(__dirname, 'public')
+  ];
+  const isAllowed = allowedDirs.some(dir => filePath.startsWith(dir + path.sep) || filePath === dir);
+  
+  // Security: Block dot files (like .env, .gitignore)
+  const fileName = path.basename(filePath);
+  const isDotFile = fileName.startsWith('.');
+  
+  if (!filePath.startsWith(__dirname) || !isAllowed || isDotFile) {
+    res.writeHead(404);
+    res.end('Not Found');
     return;
   }
 

@@ -332,4 +332,173 @@ describe('Aurora Tracker Server', () => {
     });
   });
 
+  describe('API: /api/solar-wind - Extended Metrics', () => {
+    
+    it('should return G-Scale data', async () => {
+      const res = await httpGet('/api/solar-wind');
+      const data = res.data;
+      
+      assert.ok('gScale' in data, 'should have gScale field');
+      assert.ok('gText' in data, 'should have gText field');
+      assert.ok(data.gScale >= 0 && data.gScale <= 5, 'gScale should be 0-5');
+    });
+
+    it('should return Bz south duration', async () => {
+      const res = await httpGet('/api/solar-wind');
+      const data = res.data;
+      
+      assert.ok('bzSouthDuration' in data, 'should have bzSouthDuration field');
+      assert.ok(data.bzSouthDuration >= 0, 'bzSouthDuration should be non-negative');
+    });
+
+    it('should return aurora power estimate', async () => {
+      const res = await httpGet('/api/solar-wind');
+      const data = res.data;
+      
+      assert.ok('auroraPower' in data, 'should have auroraPower field');
+      assert.ok(data.auroraPower >= 0, 'auroraPower should be non-negative');
+    });
+
+    it('should return temperature data', async () => {
+      const res = await httpGet('/api/solar-wind');
+      const data = res.data;
+      
+      assert.ok('temperature' in data, 'should have temperature field');
+      assert.ok(data.temperature >= 0, 'temperature should be non-negative');
+    });
+
+    it('should return Bx and By components', async () => {
+      const res = await httpGet('/api/solar-wind');
+      const data = res.data;
+      
+      assert.ok('bx' in data, 'should have bx field');
+      assert.ok('by' in data, 'should have by field');
+      assert.strictEqual(typeof data.bx, 'number');
+      assert.strictEqual(typeof data.by, 'number');
+    });
+  });
+
+  describe('API: /api/test-daily-email', () => {
+    
+    it('should return success response when email is configured', async () => {
+      const res = await httpGet('/api/test-daily-email');
+      assert.strictEqual(res.status, 200);
+      
+      const data = res.data;
+      // Either success:true or error about email not being enabled
+      assert.ok('success' in data || 'error' in data);
+    });
+  });
+
+  describe('API: /api/clouds - Extended', () => {
+    
+    it('should return visibility data', async () => {
+      const res = await httpGet('/api/clouds?lat=47.6&lon=-122.3');
+      const data = res.data;
+      
+      if (!data.error) {
+        assert.ok('visibility' in data, 'should have visibility field');
+      }
+    });
+
+    it('should return forecast array', async () => {
+      const res = await httpGet('/api/clouds?lat=47.6&lon=-122.3');
+      const data = res.data;
+      
+      if (!data.error) {
+        assert.ok('forecast' in data, 'should have forecast field');
+        assert.ok(Array.isArray(data.forecast), 'forecast should be an array');
+      }
+    });
+
+    it('should handle invalid coordinates gracefully', async () => {
+      const res = await httpGet('/api/clouds?lat=invalid&lon=invalid');
+      assert.strictEqual(res.status, 200);
+      // Should return default data or error object, not crash
+      assert.ok(res.data !== null);
+    });
+
+    it('should handle extreme coordinates', async () => {
+      const res = await httpGet('/api/clouds?lat=89.9&lon=179.9');
+      assert.strictEqual(res.status, 200);
+    });
+  });
+
+  describe('API: /api/ovation - Extended', () => {
+    
+    it('should return location-specific probability', async () => {
+      const res = await httpGet('/api/ovation?lat=65.0&lon=-147.0', 10000); // Fairbanks, AK
+      const data = res.data;
+      
+      if (!data.error) {
+        assert.ok('atLocation' in data, 'should have atLocation field');
+        assert.ok(data.atLocation >= 0 && data.atLocation <= 100, 'atLocation should be 0-100');
+      }
+    });
+
+    it('should return nearby max probability', async () => {
+      const res = await httpGet('/api/ovation?lat=47.6&lon=-122.3');
+      const data = res.data;
+      
+      if (!data.error) {
+        assert.ok('nearbyMax' in data, 'should have nearbyMax field');
+      }
+    });
+
+    it('should return viewable flag', async () => {
+      const res = await httpGet('/api/ovation?lat=47.6&lon=-122.3');
+      const data = res.data;
+      
+      if (!data.error) {
+        assert.ok('viewable' in data, 'should have viewable field');
+        assert.strictEqual(typeof data.viewable, 'boolean');
+      }
+    });
+  });
+
+  describe('Error Handling', () => {
+    
+    it('should handle malformed API requests', async () => {
+      const res = await httpGet('/api/');
+      // Should return 404 for invalid API path
+      assert.strictEqual(res.status, 404);
+    });
+
+    it('should return proper content types', async () => {
+      const jsonRes = await httpGet('/api/solar-wind');
+      assert.ok(jsonRes.headers['content-type'].includes('application/json'));
+      
+      const htmlRes = await httpGet('/');
+      assert.ok(htmlRes.headers['content-type'].includes('text/html'));
+    });
+  });
+
+  describe('Security', () => {
+    
+    it('should not expose sensitive environment variables', async () => {
+      const res = await httpGet('/api/solar-wind');
+      const dataStr = JSON.stringify(res.data);
+      
+      // Should not contain email credentials
+      assert.ok(!dataStr.includes('SMTP_PASS'));
+      assert.ok(!dataStr.includes('smtp.gmail'));
+    });
+
+    it('should not serve dot files', async () => {
+      // Note: URL normalization prevents ../.. path traversal in browser requests
+      // Test that dot files (like .env) are not served directly
+      const res = await httpGet('/.env');
+      // Should return 404 for dot files
+      assert.strictEqual(res.status, 404);
+    });
+
+    it('should not serve files outside public directories', async () => {
+      // Attempt to access package.json (which exists at project root but shouldn't be served)
+      const res = await httpGet('/package.json');
+      // If the file exists in src/ it would be served, otherwise 404
+      // The key is it shouldn't serve from project root
+      assert.ok(res.status === 404 || res.data.name !== 'aurora-tracker');
+    });
+  });
+
 });
