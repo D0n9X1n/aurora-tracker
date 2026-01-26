@@ -26,7 +26,11 @@ const EMAIL_CONFIG = {
   smtpPass: process.env.SMTP_PASS || '',
   fromEmail: process.env.FROM_EMAIL || '',
   recipients: (process.env.EMAIL_RECIPIENTS || '').split(',').filter(e => e.trim()),
-  cooldownMinutes: parseInt(process.env.EMAIL_COOLDOWN || '60')
+  cooldownMinutes: parseInt(process.env.EMAIL_COOLDOWN || '60'),
+  // Alert location - where to check darkness (default: Seattle, WA)
+  alertLatitude: parseFloat(process.env.ALERT_LATITUDE || '47.6'),
+  alertLongitude: parseFloat(process.env.ALERT_LONGITUDE || '-122.3'),
+  alertLocationName: process.env.ALERT_LOCATION_NAME || 'Seattle, WA'
 };
 
 // NOAA API endpoints - Using DSCOVR/ACE real-time solar wind data
@@ -657,6 +661,83 @@ function scheduleDailySummary() {
 // ============================================================================
 // Email Notifications
 // ============================================================================
+
+/**
+ * Calculate sun altitude for a given location and time.
+ * Used to determine if it's dark enough for aurora viewing.
+ * 
+ * @param {number} lat - Latitude in degrees
+ * @param {number} lon - Longitude in degrees  
+ * @param {Date} date - Date/time to check (default: now)
+ * @returns {object} - Sun altitude and darkness info
+ */
+function getSunPosition(lat, lon, date = new Date()) {
+  const toRad = (deg) => deg * Math.PI / 180;
+  const toDeg = (rad) => rad * 180 / Math.PI;
+  
+  // Day of year
+  const start = new Date(date.getFullYear(), 0, 0);
+  const diff = date - start;
+  const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
+  
+  // Solar declination (simplified)
+  const declination = -23.45 * Math.cos(toRad((360 / 365) * (dayOfYear + 10)));
+  
+  // Time of day in hours (UTC)
+  const utcHours = date.getUTCHours() + date.getUTCMinutes() / 60;
+  
+  // Solar hour angle
+  const solarNoon = 12 - (lon / 15);
+  const hourAngle = (utcHours - solarNoon) * 15;
+  
+  // Sun altitude angle
+  const latRad = toRad(lat);
+  const decRad = toRad(declination);
+  const haRad = toRad(hourAngle);
+  
+  const sinAlt = Math.sin(latRad) * Math.sin(decRad) + 
+                 Math.cos(latRad) * Math.cos(decRad) * Math.cos(haRad);
+  const altitude = toDeg(Math.asin(Math.max(-1, Math.min(1, sinAlt))));
+  
+  return {
+    altitude: Math.round(altitude * 10) / 10,
+    isDark: altitude < -6,        // Civil twilight or darker
+    canViewAurora: altitude < -6, // Need at least civil twilight for aurora
+    level: altitude < -18 ? 'night' : 
+      altitude < -12 ? 'nautical' :
+        altitude < -6 ? 'civil' :
+          altitude < 0 ? 'horizon' : 'day'
+  };
+}
+
+/**
+ * Calculate hours until dark for a location
+ */
+function getHoursUntilDark(lat, lon) {
+  const now = new Date();
+  const sun = getSunPosition(lat, lon, now);
+  
+  if (sun.canViewAurora) return 0; // Already dark
+  
+  // Check each hour ahead to find when it gets dark
+  for (let h = 1; h <= 18; h++) {
+    const future = new Date(now.getTime() + h * 60 * 60 * 1000);
+    const futureSun = getSunPosition(lat, lon, future);
+    if (futureSun.canViewAurora) {
+      // Refine to quarter hours
+      for (let m = 0; m < 60; m += 15) {
+        const precise = new Date(now.getTime() + (h - 1) * 60 * 60 * 1000 + m * 60 * 1000);
+        const preciseSun = getSunPosition(lat, lon, precise);
+        if (preciseSun.canViewAurora) {
+          return Math.round(((h - 1) + m / 60) * 10) / 10;
+        }
+      }
+      return h;
+    }
+  }
+  return null; // Won't get dark in 18 hours (polar day)
+}
+
 async function sendEmail(subject, body) {
   if (!EMAIL_CONFIG.enabled || !EMAIL_CONFIG.recipients.length) return false;
 
@@ -689,28 +770,43 @@ function checkAndSendAlerts(data) {
   const now = Date.now();
   const cooldown = EMAIL_CONFIG.cooldownMinutes * 60 * 1000;
 
-  // Alert when GO conditions detected
-  if (data.similarity >= 40 && data.bz < -5 && now - emailState.lastAlert > cooldown) {
-    // Calculate visibility latitude
-    let visibleLat = '65°N';
-    let visibleLocations = 'Alaska, Northern Canada';
-    if (data.bz < -25) { visibleLat = '35°N'; visibleLocations = 'Southern US (TX, FL, AZ)'; }
-    else if (data.bz < -20) { visibleLat = '40°N'; visibleLocations = 'Northern CA, NY, NV'; }
-    else if (data.bz < -15) { visibleLat = '45°N'; visibleLocations = 'OR, WI, MI, MA'; }
-    else if (data.bz < -10) { visibleLat = '50°N'; visibleLocations = 'WA, MN, ME, ND'; }
-    else if (data.bz < -5) { visibleLat = '55°N'; visibleLocations = 'Canada border states'; }
+  // Check space weather conditions first
+  if (!(data.similarity >= 40 && data.bz < -5 && now - emailState.lastAlert > cooldown)) {
+    return; // Conditions not met
+  }
+
+  // CHECK DARKNESS - Don't alert during daylight!
+  const sun = getSunPosition(EMAIL_CONFIG.alertLatitude, EMAIL_CONFIG.alertLongitude);
+  
+  if (!sun.canViewAurora) {
+    // It's daytime - don't send alert
+    const hoursUntilDark = getHoursUntilDark(EMAIL_CONFIG.alertLatitude, EMAIL_CONFIG.alertLongitude);
+    console.log(`[Alert] GO conditions detected but it's daytime at ${EMAIL_CONFIG.alertLocationName} (sun: ${sun.altitude}°, dark in ~${hoursUntilDark}h). Skipping alert.`);
+    return;
+  }
+
+  console.log(`[Alert] GO conditions AND dark sky at ${EMAIL_CONFIG.alertLocationName} (sun: ${sun.altitude}°). Sending alert!`);
+
+  // Calculate visibility latitude
+  let visibleLat = '65°N';
+  let visibleLocations = 'Alaska, Northern Canada';
+  if (data.bz < -25) { visibleLat = '35°N'; visibleLocations = 'Southern US (TX, FL, AZ)'; }
+  else if (data.bz < -20) { visibleLat = '40°N'; visibleLocations = 'Northern CA, NY, NV'; }
+  else if (data.bz < -15) { visibleLat = '45°N'; visibleLocations = 'OR, WI, MI, MA'; }
+  else if (data.bz < -10) { visibleLat = '50°N'; visibleLocations = 'WA, MN, ME, ND'; }
+  else if (data.bz < -5) { visibleLat = '55°N'; visibleLocations = 'Canada border states'; }
     
-    // Determine urgency level
-    const urgency = data.similarity >= 60 ? 'STRONG' : data.similarity >= 50 ? 'GOOD' : 'MODERATE';
-    const urgencyColor = data.similarity >= 60 ? '#238636' : data.similarity >= 50 ? '#1f6feb' : '#9e6a03';
+  // Determine urgency level
+  const urgency = data.similarity >= 60 ? 'STRONG' : data.similarity >= 50 ? 'GOOD' : 'MODERATE';
+  const urgencyColor = data.similarity >= 60 ? '#238636' : data.similarity >= 50 ? '#1f6feb' : '#9e6a03';
     
-    // Current time in PST
-    const pstTime = new Date().toLocaleTimeString('en-US', { 
-      hour: '2-digit', minute: '2-digit', timeZone: 'America/Los_Angeles' 
-    });
+  // Current time in PST
+  const pstTime = new Date().toLocaleTimeString('en-US', { 
+    hour: '2-digit', minute: '2-digit', timeZone: 'America/Los_Angeles' 
+  });
     
-    const subject = `🚨 AURORA GO ALERT: ${urgency} Conditions NOW! (${data.similarity}% G4 Match)`;
-    const body = `
+  const subject = `🚨 AURORA GO ALERT: ${urgency} Conditions NOW! (${data.similarity}% G4 Match)`;
+  const body = `
       <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0d1117; color: #e6edf3;">
         
         <!-- Urgent Header -->
@@ -808,9 +904,8 @@ function checkAndSendAlerts(data) {
         </div>
       </div>
     `;
-    sendEmail(subject, body);
-    emailState.lastAlert = now;
-  }
+  sendEmail(subject, body);
+  emailState.lastAlert = now;
 }
 
 // ============================================================================
