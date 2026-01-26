@@ -321,7 +321,10 @@ if [ -f ".env" ]; then
                 SMTP_PASS="$SMTP_PASS" \
                 FROM_EMAIL="${FROM_EMAIL:-$SMTP_USER}" \
                 EMAIL_RECIPIENTS="${EMAIL_RECIPIENTS:-}" \
-                EMAIL_COOLDOWN="${EMAIL_COOLDOWN:-60}"
+                EMAIL_COOLDOWN="${EMAIL_COOLDOWN:-60}" \
+                ALERT_LATITUDE="${ALERT_LATITUDE:-47.6}" \
+                ALERT_LONGITUDE="${ALERT_LONGITUDE:--122.3}" \
+                ALERT_LOCATION_NAME="${ALERT_LOCATION_NAME:-Seattle, WA}"
         if [ $? -eq 0 ]; then
             echo "✅ Email settings uploaded!"
         else
