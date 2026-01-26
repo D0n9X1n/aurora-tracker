@@ -766,6 +766,63 @@ async function sendEmail(subject, body) {
   }
 }
 
+/**
+ * Send a startup notification email when the server starts
+ */
+async function sendStartupEmail() {
+  const now = new Date();
+  const timeStr = now.toLocaleString('en-US', { 
+    timeZone: 'America/Los_Angeles',
+    dateStyle: 'full',
+    timeStyle: 'short'
+  });
+  
+  const subject = '🌌 Aurora Tracker Started';
+  const body = `
+    <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 500px; margin: 0 auto; background: #0d1117; color: #e6edf3; padding: 0;">
+      <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
+        <h1 style="margin: 0; font-size: 24px; color: #ffffff;">🌌 Aurora Tracker</h1>
+        <p style="margin: 10px 0 0; font-size: 14px; color: #8b949e;">Server Started Successfully</p>
+      </div>
+      
+      <div style="padding: 25px; background: #161b22;">
+        <p style="color: #e6edf3; margin: 0 0 15px;">Hello! Aurora Tracker is now running and monitoring space weather conditions.</p>
+        
+        <div style="background: #21262d; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; color: #8b949e;">Started:</td>
+              <td style="padding: 8px 0; color: #e6edf3;">${timeStr} PST</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #8b949e;">Alert Location:</td>
+              <td style="padding: 8px 0; color: #e6edf3;">${EMAIL_CONFIG.alertLocationName}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #8b949e;">Recipients:</td>
+              <td style="padding: 8px 0; color: #e6edf3;">${EMAIL_CONFIG.recipients.length}</td>
+            </tr>
+          </table>
+        </div>
+        
+        <p style="color: #8b949e; margin: 0; font-size: 13px;">
+          📧 You'll receive GO alerts when aurora conditions are favorable and the sky is dark.<br>
+          📅 Daily summaries are sent at 8:00 AM PST.
+        </p>
+      </div>
+      
+      <div style="background: #0d1117; padding: 15px 25px; border-top: 1px solid #30363d; border-radius: 0 0 12px 12px; text-align: center;">
+        <a href="https://aurora-tracker.azurewebsites.net" style="color: #58a6ff; text-decoration: none; font-size: 13px;">View Live Tracker →</a>
+      </div>
+    </div>
+  `;
+  
+  const sent = await sendEmail(subject, body);
+  if (sent) {
+    console.log('[Startup] Welcome email sent');
+  }
+}
+
 function checkAndSendAlerts(data) {
   const now = Date.now();
   const cooldown = EMAIL_CONFIG.cooldownMinutes * 60 * 1000;
@@ -1006,20 +1063,6 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // API: Test daily summary email (manual trigger)
-  if (url.pathname === '/api/test-daily-email') {
-    if (!EMAIL_CONFIG.enabled) {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Email not enabled', config: { enabled: false } }));
-      return;
-    }
-    console.log('[Test] Manual daily summary email trigger');
-    sendDailySummaryEmail();
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ success: true, message: 'Daily summary email triggered' }));
-    return;
-  }
-
   // Serve index.html at root
   let filePath;
   if (url.pathname === '/' || url.pathname === '/index.html') {
@@ -1064,6 +1107,7 @@ server.listen(PORT, () => {
   if (EMAIL_CONFIG.enabled) {
     console.log(`📧 Email alerts: ENABLED (${EMAIL_CONFIG.recipients.length} recipients)`);
     scheduleDailySummary();
+    sendStartupEmail();
   } else {
     console.log('📧 Email alerts: DISABLED');
   }

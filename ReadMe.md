@@ -74,11 +74,15 @@ SMTP_PASS=your-app-password
 FROM_EMAIL=your-email@gmail.com
 EMAIL_RECIPIENTS=you@email.com
 EMAIL_COOLDOWN=60
+ALERT_LATITUDE=47.6
+ALERT_LONGITUDE=-122.3
+ALERT_LOCATION_NAME=Seattle, WA
 ```
 
 **Features:**
-- Real-time GO alerts when conditions are favorable
-- Daily summary at 8 AM PST with yesterday's aurora conditions
+- **Startup notification** - Confirms server is running when it starts
+- **Real-time GO alerts** - When conditions are favorable AND sky is dark at your location
+- **Daily summary at 8 AM PST** - Yesterday's aurora conditions analysis
 
 ## Decision Logic
 

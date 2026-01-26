@@ -251,11 +251,19 @@ const skyScore = 100 - weighted;
 
 ## Email Alerts
 
+### Startup Notification
+
+When the server starts with email enabled, a welcome email is sent confirming:
+- Server start time (PST)
+- Alert location configured
+- Number of recipients
+
 ### Real-time GO Alerts
 
-Triggered when GO conditions detected:
+Triggered when GO conditions detected AND sky is dark:
 - Similarity ≥ 40% AND
 - Bz < -5 nT AND
+- Sun below -6° at alert location (civil twilight or darker) AND
 - Cooldown period elapsed (default 60 min)
 
 ### Daily Summary Email
@@ -276,6 +284,9 @@ SMTP_PASS=app-specific-password
 FROM_EMAIL=your-email@gmail.com
 EMAIL_RECIPIENTS=user1@email.com,user2@email.com
 EMAIL_COOLDOWN=60
+ALERT_LATITUDE=47.6
+ALERT_LONGITUDE=-122.3
+ALERT_LOCATION_NAME=Seattle, WA
 ```
 
 ---

@@ -378,18 +378,6 @@ describe('Aurora Tracker Server', () => {
     });
   });
 
-  describe('API: /api/test-daily-email', () => {
-    
-    it('should return success response when email is configured', async () => {
-      const res = await httpGet('/api/test-daily-email');
-      assert.strictEqual(res.status, 200);
-      
-      const data = res.data;
-      // Either success:true or error about email not being enabled
-      assert.ok('success' in data || 'error' in data);
-    });
-  });
-
   describe('API: /api/clouds - Extended', () => {
     
     it('should return visibility data', async () => {
