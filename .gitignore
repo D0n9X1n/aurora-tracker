@@ -26,6 +26,9 @@ share/python-wheels/
 # Environment variables
 .env
 
+# State files
+.daily-summary-state.json
+
 # Node
 node_modules/
 npm-debug.log*

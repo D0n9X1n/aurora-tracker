@@ -629,11 +629,36 @@ async function sendDailySummaryEmail() {
   
   const sent = await sendEmail(subject, body);
   console.log(`[Daily] Summary email ${sent ? 'sent successfully' : 'failed to send'}`);
+  return sent;
 }
 
-// Schedule daily summary at 8 AM PST
+// File to persist last daily summary date (survives restarts)
+const DAILY_SUMMARY_STATE_FILE = path.join(__dirname, '.daily-summary-state.json');
+
+function getLastDailySummaryDate() {
+  try {
+    if (fs.existsSync(DAILY_SUMMARY_STATE_FILE)) {
+      const state = JSON.parse(fs.readFileSync(DAILY_SUMMARY_STATE_FILE, 'utf8'));
+      return state.lastSentDate || null;
+    }
+  } catch (e) {
+    console.error('[Daily] Error reading state file:', e.message);
+  }
+  return null;
+}
+
+function saveLastDailySummaryDate(date) {
+  try {
+    fs.writeFileSync(DAILY_SUMMARY_STATE_FILE, JSON.stringify({ lastSentDate: date }));
+  } catch (e) {
+    console.error('[Daily] Error saving state file:', e.message);
+  }
+}
+
+// Schedule daily summary at 8 AM PST (or catch up on startup if missed)
 function scheduleDailySummary() {
-  let lastSentDate = null; // Track last sent date to prevent duplicates
+  // Load persisted state (survives server restarts)
+  let lastSentDate = getLastDailySummaryDate();
   
   const checkAndSchedule = () => {
     const now = new Date();
@@ -646,15 +671,35 @@ function scheduleDailySummary() {
     // Using 5-minute window to avoid race conditions
     if (pstHours === 8 && pstMinutes < 5 && lastSentDate !== todayDate) {
       lastSentDate = todayDate;
+      saveLastDailySummaryDate(todayDate);
       console.log(`[Daily] Triggering daily summary at ${pstHours}:${pstMinutes.toString().padStart(2, '0')} PST`);
       sendDailySummaryEmail();
     }
   };
   
-  // Check every minute
+  // Check on startup: if we missed today's summary (it's after 8 AM and we haven't sent)
+  const checkStartupCatchup = () => {
+    const now = new Date();
+    const pstHours = (now.getUTCHours() - 8 + 24) % 24;
+    const todayDate = now.toISOString().slice(0, 10);
+    
+    // If it's after 8 AM PST and we haven't sent today's summary
+    if (pstHours >= 8 && lastSentDate !== todayDate) {
+      console.log(`[Daily] Startup catch-up: Last sent on ${lastSentDate || 'never'}, sending today's summary now`);
+      lastSentDate = todayDate;
+      saveLastDailySummaryDate(todayDate);
+      sendDailySummaryEmail();
+    } else if (lastSentDate === todayDate) {
+      console.log(`[Daily] Already sent today's summary (${todayDate})`);
+    } else {
+      console.log(`[Daily] Waiting for 8:00 AM PST to send summary (current: ${pstHours}:${now.getUTCMinutes().toString().padStart(2, '0')} PST)`);
+    }
+  };
+  
+  // Check every minute for scheduled time
   setInterval(checkAndSchedule, 60 * 1000);
-  // Also check immediately on startup (in case server just started at 8 AM)
-  checkAndSchedule();
+  // Check immediately on startup for catch-up
+  checkStartupCatchup();
   console.log('📅 Daily summary scheduled for 8:00 AM PST');
 }
 
