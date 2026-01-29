@@ -1,4 +1,4 @@
-# QUICKREF.md - Aurora Tracker v1.0
+# QUICKREF.md - Aurora Tracker v1.2.0
 
 > **For AI Agents**: Complete technical specifications for the Aurora Tracker application.
 
@@ -381,3 +381,19 @@ curl "http://localhost:8000/api/clouds?lat=47.6&lon=-122.3" | jq
 # Verify page loads
 open http://localhost:8000
 ```
+
+---
+
+## Version Maintenance
+
+When releasing a new version, update the version number in ALL these files:
+
+| File | Location |
+|------|----------|
+| `package.json` | `"version": "x.x.x"` (source of truth) |
+| `QUICKREF.md` | Title line (this file) |
+| `server.js` | Console log on startup (~line 1088) |
+| `src/js/aurora-tracker.js` | File header comment (line 2) |
+| `src/css/styles.css` | File header comment (line 1) |
+
+Then run `npm install` to update `package-lock.json`.

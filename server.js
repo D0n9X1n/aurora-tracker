@@ -1085,7 +1085,7 @@ const server = http.createServer(async (req, res) => {
 // Start Server
 // ============================================================================
 server.listen(PORT, () => {
-  console.log('\n🌌 Aurora Tracker v1.0');
+  console.log('\n🌌 Aurora Tracker v1.2.0');
   console.log(`📡 http://localhost:${PORT}\n`);
   console.log('Data sources:');
   console.log('  • NOAA DSCOVR/ACE real-time solar wind');

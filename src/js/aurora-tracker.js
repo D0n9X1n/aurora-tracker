@@ -1,5 +1,5 @@
 /**
- * Aurora Tracker v1.0
+ * Aurora Tracker v1.2.0
  * 
  * Real-time aurora viewing decision based on DSCOVR/ACE satellite data.
  * Binary GO/NO GO - no uncertainty, no MAYBE.
