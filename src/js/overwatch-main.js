@@ -107,14 +107,7 @@ async function loadModule(moduleId) {
   if (!panel) return;
   
   try {
-    // For aurora, it's already in HTML, just init the script
-    if (moduleId === 'aurora') {
-      // Aurora module init using existing aurora-tracker.js
-      initAuroraModule();
-      return;
-    }
-    
-    // Dynamic import for other modules
+    // Dynamic import for all modules (including aurora)
     if (!module.loaded) {
       module.instance = await import(module.script);
       module.loaded = true;
@@ -133,32 +126,6 @@ async function loadModule(moduleId) {
         <button class="retry-btn" onclick="loadModule('${moduleId}')">Retry</button>
       </div>
     `;
-  }
-}
-
-// =============================================================================
-// Aurora Module (Special case - uses legacy code)
-// =============================================================================
-function initAuroraModule() {
-  // Aurora uses the embedded HTML and existing aurora-tracker.js
-  // Load the script if not already loaded
-  if (!document.querySelector('script[src*="aurora-tracker"]')) {
-    const script = document.createElement('script');
-    script.src = '/src/js/aurora-tracker.js';
-    script.onload = () => {
-      console.log('[Overwatch] Aurora module script loaded');
-      // The script initializes itself on DOMContentLoaded, but that's already fired
-      // So we need to manually trigger initialization
-      if (window.auroraTrackerInit) {
-        window.auroraTrackerInit();
-      }
-    };
-    document.body.appendChild(script);
-  } else {
-    // Script already loaded, just trigger init if needed
-    if (window.auroraTrackerInit) {
-      window.auroraTrackerInit();
-    }
   }
 }
 
