@@ -643,7 +643,7 @@ function renderFearGreedIndex() {
   return `
     <div class="fear-greed-section">
       <div class="fear-greed-header">
-        <h4>📈 Market Sentiment</h4>
+        <h4>📈 Market Sentiment <span class="fg-info-icon" title="How is this calculated?">ℹ️</span></h4>
         <span class="fear-greed-value ${sentiment.class}">${score}</span>
       </div>
       
@@ -664,24 +664,40 @@ function renderFearGreedIndex() {
       </div>
       
       <div class="fear-greed-factors">
-        <div class="fg-factor">
-          <span class="fg-factor-label">Momentum</span>
+        <div class="fg-factor" title="Average % change of S&P 500, NASDAQ, DOW indices. Positive = bullish momentum.">
+          <span class="fg-factor-label">Momentum (30%)</span>
           <span class="fg-factor-value ${factors.momentum?.value >= 0 ? 'positive' : 'negative'}">
             ${factors.momentum?.value >= 0 ? '▲' : '▼'} ${Math.abs(factors.momentum?.value || 0).toFixed(2)}%
           </span>
         </div>
-        <div class="fg-factor">
-          <span class="fg-factor-label">Breadth</span>
+        <div class="fg-factor" title="% of watchlist stocks advancing. Higher = more bullish sentiment.">
+          <span class="fg-factor-label">Breadth (25%)</span>
           <span class="fg-factor-value ${(factors.breadth?.value || 50) >= 50 ? 'positive' : 'negative'}">
             ${(factors.breadth?.value || 50).toFixed(0)}% ▲
           </span>
         </div>
-        <div class="fg-factor">
-          <span class="fg-factor-label">Volatility</span>
+        <div class="fg-factor" title="Standard deviation of price changes. Low volatility = calm/greedy, high = fearful.">
+          <span class="fg-factor-label">Volatility (20%)</span>
           <span class="fg-factor-value ${(factors.volatility?.value || 0) < 2 ? 'positive' : 'negative'}">
             ${(factors.volatility?.value || 0).toFixed(1)}σ
           </span>
         </div>
+      </div>
+      
+      <div class="fg-explanation">
+        <details>
+          <summary>How is this calculated?</summary>
+          <div class="fg-explanation-content">
+            <p>This sentiment index is computed from <strong>4 real-time market factors</strong>:</p>
+            <ul>
+              <li><strong>Momentum (30%)</strong>: Average % change of major indices (S&P 500, NASDAQ, DOW). Positive momentum → greed.</li>
+              <li><strong>Breadth (25%)</strong>: % of stocks advancing vs declining. More winners → greed.</li>
+              <li><strong>Movers Strength (25%)</strong>: Compares average gain of top gainers vs average loss of top losers.</li>
+              <li><strong>Volatility (20%)</strong>: Standard deviation of price changes. High volatility → fear, low → greed.</li>
+            </ul>
+            <p class="fg-note">Score starts at 50 (neutral), each factor adjusts it by its weight. Final score: 0-100.</p>
+          </div>
+        </details>
       </div>
     </div>
   `;

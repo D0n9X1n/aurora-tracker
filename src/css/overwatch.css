@@ -1832,6 +1832,11 @@ body.light-theme .fear-greed-needle {
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
 
+body.light-theme .fg-explanation-content,
+body.light-theme .fg-factor {
+  background: rgba(0,0,0,0.03);
+}
+
 /* Light theme inputs & controls */
 body.light-theme .setting-item select,
 body.light-theme .setting-item input[type="text"],
@@ -2306,6 +2311,7 @@ body.light-theme .company-sector {
   padding: 8px;
   background: rgba(255,255,255,0.03);
   border-radius: 8px;
+  cursor: help;
 }
 
 .fg-factor-label {
@@ -2323,6 +2329,65 @@ body.light-theme .company-sector {
 .fg-factor-value.positive { color: var(--go); }
 .fg-factor-value.negative { color: var(--no-go); }
 .fg-factor-value.neutral { color: var(--text-dim); }
+
+/* Fear & Greed Explanation */
+.fg-info-icon {
+  font-size: 0.8em;
+  cursor: help;
+  opacity: 0.6;
+}
+
+.fg-explanation {
+  margin-top: 12px;
+  font-size: 0.8em;
+}
+
+.fg-explanation summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 500;
+  padding: 8px 0;
+  outline: none;
+  user-select: none;
+}
+
+.fg-explanation summary:hover {
+  text-decoration: underline;
+}
+
+.fg-explanation-content {
+  padding: 12px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+  margin-top: 8px;
+  line-height: 1.6;
+}
+
+.fg-explanation-content p {
+  margin: 0 0 10px 0;
+  color: var(--text);
+}
+
+.fg-explanation-content ul {
+  margin: 0 0 10px 0;
+  padding-left: 20px;
+}
+
+.fg-explanation-content li {
+  margin-bottom: 6px;
+  color: var(--text-dim);
+}
+
+.fg-explanation-content li strong {
+  color: var(--text);
+}
+
+.fg-note {
+  font-size: 0.9em;
+  color: var(--text-dim);
+  font-style: italic;
+  margin-bottom: 0 !important;
+}
 
 /* Market Breadth */
 .market-breadth {
