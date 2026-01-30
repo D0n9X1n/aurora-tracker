@@ -1813,12 +1813,23 @@ body.light-theme .stock-card-v2,
 body.light-theme .index-pill,
 body.light-theme .movers-section,
 body.light-theme .market-breadth,
+body.light-theme .fear-greed-section,
 body.light-theme .nasdaq-movers-section,
 body.light-theme .stocks-table-container,
 body.light-theme .trend-modal-content {
   background: #ffffff;
   border-color: rgba(0,0,0,0.1);
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* Light theme Fear & Greed */
+body.light-theme .fg-factor {
+  background: rgba(0,0,0,0.03);
+}
+
+body.light-theme .fear-greed-needle {
+  background: #374151;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
 
 /* Light theme inputs & controls */
@@ -1880,10 +1891,20 @@ body.light-theme .breadth-bar {
 /* Light theme scrollbar */
 body.light-theme .nasdaq-cards-scroll::-webkit-scrollbar-track {
   background: #f3f4f6;
+  border-radius: 4px;
 }
 
 body.light-theme .nasdaq-cards-scroll::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: linear-gradient(180deg, #c1c5cb, #a1a5ab);
+  border-radius: 4px;
+}
+
+body.light-theme .nasdaq-cards-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #a1a5ab, #919599);
+}
+
+body.light-theme .nasdaq-cards-scroll {
+  scrollbar-color: #c1c5cb #f3f4f6;
 }
 
 /* Light theme modal */
@@ -2198,6 +2219,111 @@ body.light-theme .company-sector {
   padding: 12px;
 }
 
+/* Fear & Greed Index */
+.fear-greed-section {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.fear-greed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.fear-greed-header h4 {
+  margin: 0;
+  font-size: 0.95em;
+  color: var(--text-dim);
+}
+
+.fear-greed-value {
+  font-size: 1.5em;
+  font-weight: 700;
+}
+
+.fear-greed-value.extreme-fear { color: #ef4444; }
+.fear-greed-value.fear { color: #f97316; }
+.fear-greed-value.neutral { color: #eab308; }
+.fear-greed-value.greed { color: #84cc16; }
+.fear-greed-value.extreme-greed { color: #22c55e; }
+
+.fear-greed-gauge {
+  position: relative;
+  height: 12px;
+  background: linear-gradient(90deg, 
+    #ef4444 0%, 
+    #f97316 25%, 
+    #eab308 50%, 
+    #84cc16 75%, 
+    #22c55e 100%
+  );
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.fear-greed-needle {
+  position: absolute;
+  top: -4px;
+  width: 4px;
+  height: 20px;
+  background: #fff;
+  border-radius: 2px;
+  transform: translateX(-50%);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  transition: left 0.5s ease;
+}
+
+.fear-greed-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7em;
+  color: var(--text-dim);
+}
+
+.fear-greed-sentiment {
+  text-align: center;
+  font-size: 0.85em;
+  color: var(--text);
+  margin-top: 8px;
+}
+
+.fear-greed-factors {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.fg-factor {
+  text-align: center;
+  padding: 8px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+}
+
+.fg-factor-label {
+  font-size: 0.7em;
+  color: var(--text-dim);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.fg-factor-value {
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+.fg-factor-value.positive { color: var(--go); }
+.fg-factor-value.negative { color: var(--no-go); }
+.fg-factor-value.neutral { color: var(--text-dim); }
+
 /* Market Breadth */
 .market-breadth {
   background: var(--card);
@@ -2245,6 +2371,7 @@ body.light-theme .company-sector {
 /* Main View Container */
 .stocks-main-view {
   margin-top: 24px;
+  margin-bottom: 24px;
 }
 
 .stocks-main-view h3 {
@@ -2693,17 +2820,31 @@ body.light-theme .company-sector {
 }
 
 .nasdaq-cards-scroll::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 .nasdaq-cards-scroll::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.05);
-  border-radius: 3px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 4px;
+  margin: 4px 0;
 }
 
 .nasdaq-cards-scroll::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.2);
-  border-radius: 3px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0.25));
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.nasdaq-cards-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(255,255,255,0.25), rgba(255,255,255,0.35));
+  background-clip: padding-box;
+}
+
+/* Firefox scrollbar */
+.nasdaq-cards-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.2) rgba(255,255,255,0.03);
 }
 
 .nasdaq-mover-card {

@@ -577,6 +577,117 @@ function renderTableView() {
 }
 
 // =============================================================================
+// Rendering - Fear & Greed Index (Calculated from market data)
+// =============================================================================
+function calculateFearGreedIndex() {
+  // Calculate Fear & Greed based on multiple market factors
+  let score = 50; // Start neutral
+  let factors = {};
+  
+  // Factor 1: Market Momentum (from indices)
+  if (stockData?.indices) {
+    const avgChange = stockData.indices.reduce((sum, idx) => sum + (idx.changePercent || 0), 0) / stockData.indices.length;
+    const momentumScore = Math.min(100, Math.max(0, 50 + avgChange * 10));
+    factors.momentum = { value: avgChange, score: momentumScore };
+    score += (momentumScore - 50) * 0.3;
+  }
+  
+  // Factor 2: Breadth (advancing vs declining in watchlist)
+  if (stockData?.stocks) {
+    const advancing = stockData.stocks.filter(s => (s.changePercent || 0) > 0).length;
+    const total = stockData.stocks.length;
+    const breadthPct = total > 0 ? (advancing / total * 100) : 50;
+    factors.breadth = { value: breadthPct, score: breadthPct };
+    score += (breadthPct - 50) * 0.25;
+  }
+  
+  // Factor 3: Top Movers sentiment (gainers vs losers strength)
+  if (nasdaqMovers) {
+    const { gainers = [], losers = [] } = nasdaqMovers;
+    const avgGain = gainers.length > 0 ? gainers.reduce((sum, s) => sum + Math.abs(s.changePercent || 0), 0) / gainers.length : 0;
+    const avgLoss = losers.length > 0 ? losers.reduce((sum, s) => sum + Math.abs(s.changePercent || 0), 0) / losers.length : 0;
+    const moversScore = avgGain > avgLoss ? Math.min(100, 50 + (avgGain - avgLoss) * 3) : Math.max(0, 50 - (avgLoss - avgGain) * 3);
+    factors.movers = { gainAvg: avgGain, lossAvg: avgLoss, score: moversScore };
+    score += (moversScore - 50) * 0.25;
+  }
+  
+  // Factor 4: Volatility proxy (spread of changes)
+  if (stockData?.stocks && stockData.stocks.length > 0) {
+    const changes = stockData.stocks.map(s => s.changePercent || 0);
+    const avgChange = changes.reduce((a, b) => a + b, 0) / changes.length;
+    const volatility = Math.sqrt(changes.reduce((sum, c) => sum + Math.pow(c - avgChange, 2), 0) / changes.length);
+    // High volatility = more fear, low volatility = more greed
+    const volScore = Math.min(100, Math.max(0, 70 - volatility * 10));
+    factors.volatility = { value: volatility, score: volScore };
+    score += (volScore - 50) * 0.2;
+  }
+  
+  // Normalize to 0-100
+  score = Math.min(100, Math.max(0, score));
+  
+  return { score: Math.round(score), factors };
+}
+
+function getFearGreedLabel(score) {
+  if (score <= 20) return { label: 'Extreme Fear', class: 'extreme-fear', emoji: '😱' };
+  if (score <= 40) return { label: 'Fear', class: 'fear', emoji: '😰' };
+  if (score <= 60) return { label: 'Neutral', class: 'neutral', emoji: '😐' };
+  if (score <= 80) return { label: 'Greed', class: 'greed', emoji: '😊' };
+  return { label: 'Extreme Greed', class: 'extreme-greed', emoji: '🤑' };
+}
+
+function renderFearGreedIndex() {
+  const { score, factors } = calculateFearGreedIndex();
+  const sentiment = getFearGreedLabel(score);
+  
+  return `
+    <div class="fear-greed-section">
+      <div class="fear-greed-header">
+        <h4>📈 Market Sentiment</h4>
+        <span class="fear-greed-value ${sentiment.class}">${score}</span>
+      </div>
+      
+      <div class="fear-greed-gauge">
+        <div class="fear-greed-needle" style="left: ${score}%"></div>
+      </div>
+      
+      <div class="fear-greed-labels">
+        <span>Extreme Fear</span>
+        <span>Fear</span>
+        <span>Neutral</span>
+        <span>Greed</span>
+        <span>Extreme Greed</span>
+      </div>
+      
+      <div class="fear-greed-sentiment">
+        ${sentiment.emoji} <strong>${sentiment.label}</strong>
+      </div>
+      
+      <div class="fear-greed-factors">
+        <div class="fg-factor">
+          <span class="fg-factor-label">Momentum</span>
+          <span class="fg-factor-value ${factors.momentum?.value >= 0 ? 'positive' : 'negative'}">
+            ${factors.momentum?.value >= 0 ? '▲' : '▼'} ${Math.abs(factors.momentum?.value || 0).toFixed(2)}%
+          </span>
+        </div>
+        <div class="fg-factor">
+          <span class="fg-factor-label">Breadth</span>
+          <span class="fg-factor-value ${(factors.breadth?.value || 50) >= 50 ? 'positive' : 'negative'}">
+            ${(factors.breadth?.value || 50).toFixed(0)}% ▲
+          </span>
+        </div>
+        <div class="fg-factor">
+          <span class="fg-factor-label">Volatility</span>
+          <span class="fg-factor-value ${(factors.volatility?.value || 0) < 2 ? 'positive' : 'negative'}">
+            ${(factors.volatility?.value || 0).toFixed(1)}σ
+          </span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// =============================================================================
 // Rendering - Market Breadth
 // =============================================================================
 function renderMarketBreadth() {
@@ -642,6 +753,7 @@ function updateUI() {
   stocksContainer.innerHTML = `
     ${renderHeader()}
     ${renderMarketSummary()}
+    ${renderFearGreedIndex()}
     
     ${config.showTopMovers ? renderNasdaqMovers() : ''}
     
