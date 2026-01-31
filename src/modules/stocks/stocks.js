@@ -1,5 +1,5 @@
 /**
- * Nocturne - Stocks Module v3.0.0
+ * Nocturne - Stocks Module v3.1.0
  * 
  * Advanced stock market monitoring with heatmap, gainers/losers, and volume analysis.
  * 
@@ -14,7 +14,7 @@ export const MODULE_INFO = {
   name: 'Stock Market',
   icon: '📈',
   description: 'Monitor stock prices and market movements',
-  version: '3.0.0'
+  version: '3.1.0'
 };
 
 // =============================================================================

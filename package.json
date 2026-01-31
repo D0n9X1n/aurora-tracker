@@ -1,6 +1,6 @@
 {
   "name": "nocturne",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Nocturne - Your 24x7 Personal Assistant for Aurora, Weather, Crypto, Stocks, and News",
   "main": "server.js",
   "type": "module",

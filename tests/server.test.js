@@ -1,5 +1,5 @@
 /**
- * Nocturne Server Tests v3.0.0
+ * Nocturne Server Tests v3.1.0
  * Using Node.js built-in test runner (Node 18+))
  * 
  * Test Organization:
@@ -83,7 +83,7 @@ async function waitForServer(maxAttempts = 30) {
 // MAIN TEST SUITE
 // ===========================================================================
 
-describe('Nocturne Server v3.0.0', () => {
+describe('Nocturne Server v3.1.0', () => {
   
   before(async () => {
     const serverPath = path.join(__dirname, '..', 'server.js');
@@ -486,7 +486,7 @@ describe('Nocturne Server v3.0.0', () => {
       const res = await httpGet('/api/status');
       assert.strictEqual(res.status, 200);
       assert.strictEqual(res.data.service, 'Nocturne');
-      assert.strictEqual(res.data.version, '3.0.0');
+      assert.strictEqual(res.data.version, '3.1.0');
     });
 
     it('should return uptime information', async () => {

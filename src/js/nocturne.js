@@ -1,5 +1,5 @@
 /**
- * Nocturne - Main Controller v3.0.0
+ * Nocturne - Main Controller v3.1.0
  * 
  * 24x7 Personal Assistant - Central hub for all modules
  */

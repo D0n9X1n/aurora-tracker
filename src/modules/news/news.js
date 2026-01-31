@@ -1,5 +1,5 @@
 /**
- * Nocturne - News Module v3.0.0
+ * Nocturne - News Module v3.1.0
  * 
  * Monitor breaking news and important headlines.
  * 
@@ -14,7 +14,7 @@ export const MODULE_INFO = {
   name: 'Breaking News',
   icon: '📰',
   description: 'Monitor breaking news and important headlines',
-  version: '3.0.0'
+  version: '3.1.0'
 };
 
 // =============================================================================

@@ -1,10 +1,10 @@
-# 🌙 Nocturne v3.0.0
+# 🌙 Nocturne v3.1.0
 
 **24x7 Personal Monitoring Assistant**
 
 A comprehensive monitoring dashboard for tracking aurora conditions, cryptocurrency, stock markets, and breaking news - all from free APIs with no keys required!
 
-![Version](https://img.shields.io/badge/version-3.0.0-blue)
+![Version](https://img.shields.io/badge/version-3.1.0-blue)
 ![Node](https://img.shields.io/badge/node-18%2B-green)
 ![Tests](https://img.shields.io/badge/tests-59%20passing-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)

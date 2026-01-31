@@ -1,5 +1,5 @@
 /**
- * Nocturne - Aurora Module v3.0.0
+ * Nocturne - Aurora Module v3.1.0
  * 
  * Real-time aurora viewing decision based on DSCOVR/ACE satellite data.
  * Binary GO/NO GO - no uncertainty, no MAYBE.
@@ -15,7 +15,7 @@ export const MODULE_INFO = {
   name: 'Aurora Tracker',
   icon: '🌌',
   description: 'Real-time aurora visibility with GO/NO GO decision',
-  version: '3.0.0'
+  version: '3.1.0'
 };
 
 // =============================================================================

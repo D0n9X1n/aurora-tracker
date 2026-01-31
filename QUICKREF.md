@@ -1,4 +1,4 @@
-# QUICKREF.md - Nocturne v3.0.0
+# QUICKREF.md - Nocturne v3.1.0
 
 > **⚠️ FOR AI AGENTS**: Read this file FIRST before making any changes to this codebase. This contains the complete technical specifications for the Nocturne 24x7 monitoring service.
 
@@ -8,7 +8,7 @@
 
 **Project Name**: Nocturne  
 **Purpose**: 24x7 personal monitoring assistant with modular trackers  
-**Version**: 3.0.0  
+**Version**: 3.1.0  
 **Node.js**: 18+ (ES Modules)  
 **Deployment**: Azure App Service (Basic B1 for Always On)
 

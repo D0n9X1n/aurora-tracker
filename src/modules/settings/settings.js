@@ -231,7 +231,7 @@ class SettingsModule {
                     <section class="settings-section">
                         <h3>ℹ️ About</h3>
                         <div class="about-info">
-                            <p><strong>Nocturne v3.0.0</strong></p>
+                            <p><strong>Nocturne v3.1.0</strong></p>
                             <p>Your 24x7 Personal Assistant</p>
                             <p class="text-dim">
                                 Data sources: NOAA, Open-Meteo, CoinGecko, Yahoo Finance, RSS Feeds
