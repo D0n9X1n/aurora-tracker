@@ -1,6 +1,6 @@
-# 👁️ Overwatch v3.0.0
+# 🌙 Nocturne v3.0.0
 
-**24x7 Monitoring Service Platform**
+**24x7 Personal Monitoring Assistant**
 
 A comprehensive monitoring dashboard for tracking aurora conditions, cryptocurrency, stock markets, and breaking news - all from free APIs with no keys required!
 
@@ -106,7 +106,7 @@ A comprehensive monitoring dashboard for tracking aurora conditions, cryptocurre
 ```bash
 # Clone the repo
 git clone <repo-url>
-cd overwatch
+cd nocturne
 
 # Install dependencies (just dotenv!)
 npm install
@@ -188,7 +188,7 @@ STOCKS_WATCHLIST=MSFT,NVDA,TSLA,META,GOOGL,AAPL,AMD,PLTR,SMCI,ARM
 ## 📊 Project Structure
 
 ```
-overwatch/
+nocturne/
 ├── server.js              # Main server (~2100 lines)
 ├── package.json
 ├── QUICKREF.md            # Technical reference (READ FIRST!)
@@ -198,11 +198,11 @@ overwatch/
 │   ├── index.html         # Main SPA entry
 │   ├── css/
 │   │   ├── styles.css     # Base styles
-│   │   ├── overwatch.css  # Module styles (~2900 lines)
+│   │   ├── nocturne.css   # Module styles (~2900 lines)
 │   │   └── charts.css     # Chart styles
 │   ├── js/
-│   │   ├── overwatch-main.js  # Main controller
-│   │   ├── aurora-tracker.js  # Aurora decision logic
+│   │   ├── nocturne.js        # Main controller
+│   │   ├── aurora.js          # Aurora decision logic
 │   │   └── charts.js          # SVG chart library
 │   └── modules/           # Feature modules
 │       ├── dashboard/
@@ -235,16 +235,16 @@ The deploy script uses **Basic (B1) tier** for 24x7 Always On support:
 Or manually:
 ```bash
 # Create resource group
-az group create --name overwatch-rg --location eastus
+az group create --name nocturne-rg --location centralus
 
 # Create Basic tier plan (supports Always On)
-az appservice plan create --name overwatch --resource-group overwatch-rg --sku B1 --is-linux
+az appservice plan create --name nocturne-plan --resource-group nocturne-rg --sku B1 --is-linux
 
 # Create and deploy
-az webapp up --name overwatch --resource-group overwatch-rg --plan overwatch --runtime "NODE|22-lts"
+az webapp up --name nocturne --resource-group nocturne-rg --plan nocturne-plan --runtime "NODE|22-lts"
 
 # Enable Always On
-az webapp config set --name overwatch --resource-group overwatch-rg --always-on true
+az webapp config set --name nocturne --resource-group nocturne-rg --always-on true
 ```
 
 > **Note**: Basic tier (~$13/month) is required for 24x7 uptime. Free tier apps sleep after 20 minutes of inactivity.

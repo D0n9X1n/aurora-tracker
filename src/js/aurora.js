@@ -1,10 +1,10 @@
 /**
- * Overwatch - Aurora Module v3.0.0
+ * Nocturne - Aurora Module v3.0.0
  * 
  * Real-time aurora viewing decision based on DSCOVR/ACE satellite data.
  * Binary GO/NO GO - no uncertainty, no MAYBE.
  * 
- * Part of the Overwatch 24x7 Monitoring Service
+ * Part of Nocturne 24x7 Personal Assistant
  * Reference: May 10-11, 2024 G4 Storm (strongest in 20+ years)
  */
 
@@ -901,7 +901,7 @@ class AuroraTracker {
 // =============================================================================
 const tracker = new AuroraTracker();
 
-// Expose init function for dynamic loading (Overwatch main controller)
+// Expose init function for dynamic loading (Nocturne main controller)
 window.auroraTrackerInit = async function() {
   console.log('[Aurora] Initializing tracker...');
   initGeolocation();

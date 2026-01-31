@@ -1,5 +1,5 @@
 /**
- * Overwatch Crypto Module
+ * Nocturne Crypto Module
  * Cryptocurrency price tracking with CoinGecko API (free, no key)
  */
 

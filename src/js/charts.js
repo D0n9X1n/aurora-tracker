@@ -1,9 +1,9 @@
 /**
- * Overwatch Charts Library
+ * Nocturne Charts Library
  * Lightweight SVG-based charting for dashboards
  */
 
-class OverwatchCharts {
+class NocturneCharts {
   /**
      * Create a line/area chart
      */
@@ -324,4 +324,4 @@ class OverwatchCharts {
 }
 
 // Export globally
-window.OverwatchCharts = OverwatchCharts;
+window.NocturneCharts = NocturneCharts;

@@ -1,7 +1,7 @@
 /**
- * Overwatch - Main Controller v3.0.0
+ * Nocturne - Main Controller v3.0.0
  * 
- * 24x7 Monitoring Service - Central hub for all modules
+ * 24x7 Personal Assistant - Central hub for all modules
  */
 
 // =============================================================================
@@ -117,7 +117,7 @@ async function loadModule(moduleId) {
       module.instance.init(panel);
     }
   } catch (error) {
-    console.error(`[Overwatch] Failed to load module ${moduleId}:`, error);
+    console.error(`[Nocturne] Failed to load module ${moduleId}:`, error);
     panel.innerHTML = `
       <div class="module-error">
         <h2>${module.icon} ${module.name}</h2>
@@ -197,7 +197,7 @@ function updateTabStatuses() {
 // Initialization
 // =============================================================================
 async function init() {
-  console.log('[Overwatch] Initializing 24x7 Monitoring Service...');
+  console.log('[Nocturne] Initializing 24x7 Personal Assistant...');
   
   // Init tabs
   initTabs();
@@ -215,7 +215,7 @@ async function init() {
     updateTabStatuses();
   }, 5000);
   
-  console.log('[Overwatch] Ready!');
+  console.log('[Nocturne] Ready!');
 }
 
 // Start when DOM is ready

@@ -1,10 +1,10 @@
 /**
- * Overwatch - Aurora Module v3.0.0
+ * Nocturne - Aurora Module v3.0.0
  * 
  * Real-time aurora viewing decision based on DSCOVR/ACE satellite data.
  * Binary GO/NO GO - no uncertainty, no MAYBE.
  * 
- * Part of the Overwatch 24x7 Monitoring Service
+ * Part of Nocturne 24x7 Personal Assistant
  */
 
 // =============================================================================

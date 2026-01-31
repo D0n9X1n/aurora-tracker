@@ -1,13 +1,13 @@
-# QUICKREF.md - Overwatch v3.0.0
+# QUICKREF.md - Nocturne v3.0.0
 
-> **⚠️ FOR AI AGENTS**: Read this file FIRST before making any changes to this codebase. This contains the complete technical specifications for the Overwatch 24x7 monitoring service.
+> **⚠️ FOR AI AGENTS**: Read this file FIRST before making any changes to this codebase. This contains the complete technical specifications for the Nocturne 24x7 monitoring service.
 
 ---
 
 ## 🎯 System Overview
 
-**Project Name**: Overwatch  
-**Purpose**: 24x7 monitoring service platform with modular trackers  
+**Project Name**: Nocturne  
+**Purpose**: 24x7 personal monitoring assistant with modular trackers  
 **Version**: 3.0.0  
 **Node.js**: 18+ (ES Modules)  
 **Deployment**: Azure App Service (Basic B1 for Always On)
@@ -54,7 +54,7 @@
 ## 📁 File Structure
 
 ```
-overwatch/
+nocturne/
 ├── server.js                    # Backend: ~2100 lines, all API routes
 ├── package.json                 # Dependencies (minimal: dotenv only)
 ├── .env                         # Optional config (email, alerts)
@@ -67,11 +67,11 @@ overwatch/
 │   ├── index.html               # Main SPA entry point
 │   ├── css/
 │   │   ├── styles.css           # Base/reset styles
-│   │   ├── overwatch.css        # Module styles (~2900 lines)
+│   │   ├── nocturne.css         # Module styles (~2900 lines)
 │   │   └── charts.css           # Chart component styles
 │   ├── js/
-│   │   ├── overwatch-main.js    # Main controller & router
-│   │   ├── aurora-tracker.js    # Aurora decision logic
+│   │   ├── nocturne.js          # Main controller & router
+│   │   ├── aurora.js            # Aurora decision logic
 │   │   └── charts.js            # SVG chart library
 │   └── modules/
 │       ├── dashboard/dashboard.js
@@ -203,7 +203,7 @@ Reference values from the strongest storm in 20+ years:
 ### CSS Architecture
 
 - **styles.css**: Base reset, variables, typography
-- **overwatch.css**: All module-specific styles (~2900 lines)
+- **nocturne.css**: All module-specific styles (~2900 lines)
 - **charts.css**: SVG chart styling
 
 ### CSS Variables
@@ -289,8 +289,8 @@ Test structure:
 ./quick-deploy.sh
 
 # Or manual deployment
-az webapp up --name overwatch --resource-group overwatch-rg --plan overwatch --runtime "NODE|22-lts"
-az webapp config set --name overwatch --resource-group overwatch-rg --always-on true
+az webapp up --name nocturne --resource-group nocturne-rg --plan nocturne-plan --runtime "NODE|22-lts"
+az webapp config set --name nocturne --resource-group nocturne-rg --always-on true
 ```
 
 > **Important**: Use Basic tier (B1) or higher for Always On. Free tier sleeps after 20 min.
@@ -306,7 +306,7 @@ When releasing a new version, update ALL these files:
 | `package.json` | `"version": "x.x.x"` (source of truth) |
 | `QUICKREF.md` | Title line |
 | `server.js` | Startup console log |
-| `src/js/aurora-tracker.js` | Header comment |
+| `src/js/aurora.js` | Header comment |
 | `src/css/styles.css` | Header comment |
 
 ---

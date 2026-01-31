@@ -1,6 +1,6 @@
 /**
- * Overwatch Server Tests v3.0.0
- * Using Node.js built-in test runner (Node 18+)
+ * Nocturne Server Tests v3.0.0
+ * Using Node.js built-in test runner (Node 18+))
  * 
  * Test Organization:
  * ├── Static File Serving     (10 tests) - HTML, CSS, JS, PWA assets
@@ -83,7 +83,7 @@ async function waitForServer(maxAttempts = 30) {
 // MAIN TEST SUITE
 // ===========================================================================
 
-describe('Overwatch Server v3.0.0', () => {
+describe('Nocturne Server v3.0.0', () => {
   
   before(async () => {
     const serverPath = path.join(__dirname, '..', 'server.js');
@@ -112,7 +112,7 @@ describe('Overwatch Server v3.0.0', () => {
       const res = await httpGet('/');
       assert.strictEqual(res.status, 200);
       assert.ok(res.headers['content-type'].includes('text/html'));
-      assert.ok(res.data.includes('Overwatch'));
+      assert.ok(res.data.includes('Nocturne'));
     });
 
     it('should serve CSS files', async () => {
@@ -121,8 +121,8 @@ describe('Overwatch Server v3.0.0', () => {
       assert.ok(res.headers['content-type'].includes('text/css'));
     });
 
-    it('should serve overwatch.css', async () => {
-      const res = await httpGet('/src/css/overwatch.css');
+    it('should serve nocturne.css', async () => {
+      const res = await httpGet('/src/css/nocturne.css');
       assert.strictEqual(res.status, 200);
       assert.ok(res.headers['content-type'].includes('text/css'));
     });
@@ -134,7 +134,7 @@ describe('Overwatch Server v3.0.0', () => {
     });
 
     it('should serve JavaScript files', async () => {
-      const res = await httpGet('/src/js/aurora-tracker.js');
+      const res = await httpGet('/src/js/aurora.js');
       assert.strictEqual(res.status, 200);
       assert.ok(res.headers['content-type'].includes('application/javascript'));
     });
@@ -145,8 +145,8 @@ describe('Overwatch Server v3.0.0', () => {
       assert.ok(res.headers['content-type'].includes('application/javascript'));
     });
 
-    it('should serve overwatch-main.js', async () => {
-      const res = await httpGet('/src/js/overwatch-main.js');
+    it('should serve nocturne.js', async () => {
+      const res = await httpGet('/src/js/nocturne.js');
       assert.strictEqual(res.status, 200);
       assert.ok(res.headers['content-type'].includes('application/javascript'));
     });
@@ -485,7 +485,7 @@ describe('Overwatch Server v3.0.0', () => {
     it('should return service status', async () => {
       const res = await httpGet('/api/status');
       assert.strictEqual(res.status, 200);
-      assert.strictEqual(res.data.service, 'Overwatch');
+      assert.strictEqual(res.data.service, 'Nocturne');
       assert.strictEqual(res.data.version, '3.0.0');
     });
 
@@ -521,7 +521,7 @@ describe('Overwatch Server v3.0.0', () => {
 
     it('should not serve files outside public directories', async () => {
       const res = await httpGet('/package.json');
-      assert.ok(res.status === 404 || res.data.name !== 'aurora-tracker');
+      assert.ok(res.status === 404 || res.data.name !== 'nocturne');
     });
   });
 

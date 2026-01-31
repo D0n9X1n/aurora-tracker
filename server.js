@@ -12,7 +12,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ============================================================================
-// Configuration - Overwatch 24x7 Monitoring Service
+// Configuration - Nocturne 24x7 Personal Assistant
 // ============================================================================
 const PORT = process.env.PORT || 8000;
 const CACHE_DURATION = 2 * 60 * 1000; // 2 minutes
@@ -94,7 +94,7 @@ const emailState = { lastAlert: 0 };
 function fetchJSON(url) {
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => reject(new Error('Timeout')), 15000);
-    https.get(url, { headers: { 'User-Agent': 'Overwatch/2.0' } }, (res) => {
+    https.get(url, { headers: { 'User-Agent': 'Nocturne/3.0' } }, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
@@ -645,7 +645,7 @@ async function sendDailySummaryEmail() {
       <div style="background: #0d1117; padding: 20px 25px; border-top: 1px solid #30363d; border-radius: 0 0 12px 12px;">
         <p style="margin: 0; font-size: 13px; color: #8b949e; text-align: center;">
           📅 Daily summary sent at 8:00 AM PST<br>
-          🌌 <a href="https://aurora-tracker.azurewebsites.net" style="color: #58a6ff; text-decoration: none;">View Live Aurora Tracker →</a>
+          🌌 <a href="https://nocturne.azurewebsites.net" style="color: #58a6ff; text-decoration: none;">View Live Nocturne →</a>
         </p>
       </div>
     </div>
@@ -967,7 +967,7 @@ function checkAndSendAlerts(data) {
         <!-- Footer -->
         <div style="background: #0d1117; padding: 20px 25px; border-top: 1px solid #30363d;">
           <p style="margin: 0; font-size: 13px; color: #8b949e; text-align: center;">
-            🌌 <a href="https://aurora-tracker.azurewebsites.net" style="color: #58a6ff; text-decoration: none;">Open Live Tracker →</a><br>
+            🌌 <a href="https://nocturne.azurewebsites.net" style="color: #58a6ff; text-decoration: none;">Open Live Nocturne →</a><br>
             <span style="font-size: 11px;">Alert cooldown: ${EMAIL_CONFIG.cooldownMinutes} minutes</span>
           </p>
         </div>
@@ -1003,7 +1003,7 @@ function serveFile(filePath, res) {
 }
 
 // ============================================================================
-// HTTP Server - Overwatch 24x7 Monitoring Service
+// HTTP Server - Nocturne 24x7 Personal Assistant
 // ============================================================================
 const server = http.createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -1245,12 +1245,12 @@ const server = http.createServer(async (req, res) => {
   }
 
   // ==========================================
-  // OVERWATCH STATUS API
+  // NOCTURNE STATUS API
   // ==========================================
   
   if (url.pathname === '/api/status') {
     const status = {
-      service: 'Overwatch',
+      service: 'Nocturne',
       version: '3.0.0',
       uptime: process.uptime(),
       modules: {
@@ -1583,7 +1583,7 @@ function checkStockAlerts(stocks) {
       ${moversHtml}
       <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #333;">
         <p style="color: #666; font-size: 12px;">
-          Sent by Overwatch 24x7 Monitoring Service
+          Sent by Nocturne 24x7 Monitoring Service
         </p>
       </div>
     </div>
@@ -1769,7 +1769,7 @@ function checkExtremeMovers(movers) {
           ⏰ Alert Time: ${new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })} ET<br>
           📊 Next check in 10 minutes (during market hours)<br>
           🔕 Cooldown: 2 hours per stock to prevent spam<br><br>
-          Sent by Overwatch 24x7 Monitoring Service
+          Sent by Nocturne 24x7 Monitoring Service
         </p>
       </div>
     </div>
@@ -1919,7 +1919,7 @@ async function fetchRSSFeed(url) {
     
     protocol.get(url, { 
       headers: { 
-        'User-Agent': 'Overwatch/2.0',
+        'User-Agent': 'Nocturne/3.0',
         'Accept': 'application/rss+xml, application/xml, text/xml'
       } 
     }, (res) => {
@@ -2039,7 +2039,7 @@ async function getWeatherForecast(lat, lon) {
     try {
       const geoUrl = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
       const geoData = await new Promise((resolve, reject) => {
-        https.get(geoUrl, { headers: { 'User-Agent': 'Overwatch/2.0' } }, (res) => {
+        https.get(geoUrl, { headers: { 'User-Agent': 'Nocturne/3.0' } }, (res) => {
           let data = '';
           res.on('data', chunk => data += chunk);
           res.on('end', () => {
@@ -2150,10 +2150,10 @@ async function getCryptoPrices() {
 }
 
 // ============================================================================
-// Start Server - Overwatch 24x7 Monitoring Service
+// Start Server - Nocturne 24x7 Personal Assistant
 // ============================================================================
 server.listen(PORT, () => {
-  console.log('\n👁️  Overwatch v3.0.0 - 24x7 Monitoring Service');
+  console.log('\n🌙 Nocturne v3.0.0 - Your 24x7 Personal Assistant');
   console.log(`📡 http://localhost:${PORT}\n`);
   
   console.log('Enabled Modules:');

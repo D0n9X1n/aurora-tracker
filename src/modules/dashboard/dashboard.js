@@ -1,5 +1,5 @@
 /**
- * Overwatch Dashboard Module
+ * Nocturne Dashboard Module
  * At-a-glance summary of all monitoring services
  */
 

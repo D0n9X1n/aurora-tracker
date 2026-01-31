@@ -1,5 +1,5 @@
 /**
- * Overwatch Settings Module
+ * Nocturne Settings Module
  * User preferences and customization
  */
 
@@ -39,7 +39,7 @@ class SettingsModule {
 
   loadSettings() {
     try {
-      const saved = localStorage.getItem('overwatch_settings');
+      const saved = localStorage.getItem('nocturne_settings');
       if (saved) {
         return { ...this.getDefaultSettings(), ...JSON.parse(saved) };
       }
@@ -51,7 +51,7 @@ class SettingsModule {
 
   saveSettings() {
     try {
-      localStorage.setItem('overwatch_settings', JSON.stringify(this.settings));
+      localStorage.setItem('nocturne_settings', JSON.stringify(this.settings));
       this.applySettings();
       this.showToast('Settings saved!');
     } catch (e) {
@@ -83,7 +83,7 @@ class SettingsModule {
             <div class="settings-module">
                 <div class="settings-header">
                     <h2>⚙️ Settings</h2>
-                    <p>Customize your Overwatch experience</p>
+                    <p>Customize your Nocturne experience</p>
                 </div>
 
                 <div class="settings-sections">
@@ -231,8 +231,8 @@ class SettingsModule {
                     <section class="settings-section">
                         <h3>ℹ️ About</h3>
                         <div class="about-info">
-                            <p><strong>Overwatch v3.0.0</strong></p>
-                            <p>24x7 Monitoring Service</p>
+                            <p><strong>Nocturne v3.0.0</strong></p>
+                            <p>Your 24x7 Personal Assistant</p>
                             <p class="text-dim">
                                 Data sources: NOAA, Open-Meteo, CoinGecko, Yahoo Finance, RSS Feeds
                             </p>
@@ -307,7 +307,7 @@ class SettingsModule {
   resetSettings() {
     if (confirm('Reset all settings to defaults?')) {
       this.settings = this.getDefaultSettings();
-      localStorage.removeItem('overwatch_settings');
+      localStorage.removeItem('nocturne_settings');
       this.render();
       this.applySettings();
       this.showToast('Settings reset to defaults');

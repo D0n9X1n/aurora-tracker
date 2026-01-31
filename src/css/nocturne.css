@@ -1,11 +1,11 @@
-/* Overwatch v3.0.0 - Global Styles
-   24x7 Monitoring Service Platform */
+/* Nocturne v3.0.0 - Global Styles
+   Your 24x7 Personal Assistant */
 
 /* ===========================================
-   OVERWATCH GLOBAL LAYOUT
+   NOCTURNE GLOBAL LAYOUT
    =========================================== */
 
-.overwatch-app {
+.nocturne-app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -16,7 +16,7 @@
    GLOBAL HEADER
    =========================================== */
 
-.overwatch-header {
+.nocturne-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -549,7 +549,7 @@
    GLOBAL FOOTER
    =========================================== */
 
-.overwatch-footer {
+.nocturne-footer {
   text-align: center;
   padding: 16px;
   font-size: 0.8em;
@@ -558,16 +558,16 @@
   background: rgba(0,0,0,0.3);
 }
 
-.overwatch-footer a {
+.nocturne-footer a {
   color: var(--accent);
   text-decoration: none;
 }
 
-.overwatch-footer a:hover {
+.nocturne-footer a:hover {
   text-decoration: underline;
 }
 
-.overwatch-footer p {
+.nocturne-footer p {
   margin: 4px 0;
 }
 
@@ -920,7 +920,7 @@
    =========================================== */
 
 @media (max-width: 640px) {
-  .overwatch-header {
+  .nocturne-header {
     flex-direction: column;
     gap: 8px;
     text-align: center;
@@ -1786,7 +1786,7 @@ body.light-theme {
 }
 
 /* Light theme header & navigation */
-body.light-theme .overwatch-header {
+body.light-theme .nocturne-header {
   background: rgba(255,255,255,0.95);
   border-bottom-color: rgba(0,0,0,0.1);
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);

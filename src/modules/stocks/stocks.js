@@ -1,9 +1,9 @@
 /**
- * Overwatch - Stocks Module v3.0.0
+ * Nocturne - Stocks Module v3.0.0
  * 
  * Advanced stock market monitoring with heatmap, gainers/losers, and volume analysis.
  * 
- * Part of the Overwatch 24x7 Monitoring Service
+ * Part of Nocturne 24x7 Personal Assistant
  */
 
 // =============================================================================
@@ -116,7 +116,7 @@ const config = {
  */
 function loadSettingsFromStorage() {
   try {
-    const saved = localStorage.getItem('overwatch_settings');
+    const saved = localStorage.getItem('nocturne_settings');
     if (saved) {
       const settings = JSON.parse(saved);
       // Load watchlist
@@ -582,7 +582,7 @@ function renderTableView() {
 function calculateFearGreedIndex() {
   // Calculate Fear & Greed based on multiple market factors
   let score = 50; // Start neutral
-  let factors = {};
+  const factors = {};
   
   // Factor 1: Market Momentum (from indices)
   if (stockData?.indices) {
@@ -814,13 +814,13 @@ function setupEventListeners() {
 }
 
 function renderSparklines() {
-  if (!window.OverwatchCharts || !stockData?.stocks) return;
+  if (!window.NocturneCharts || !stockData?.stocks) return;
   
   stockData.stocks.forEach(stock => {
     if (stock.sparkline && stock.sparkline.length > 0) {
       const sparkContainer = document.getElementById(`spark-${stock.symbol}`);
       if (sparkContainer) {
-        window.OverwatchCharts.sparkline(sparkContainer, stock.sparkline, {
+        window.NocturneCharts.sparkline(sparkContainer, stock.sparkline, {
           width: 120,
           height: 30
         });

@@ -1,9 +1,9 @@
 /**
- * Overwatch - News Module v3.0.0
+ * Nocturne - News Module v3.0.0
  * 
  * Monitor breaking news and important headlines.
  * 
- * Part of the Overwatch 24x7 Monitoring Service
+ * Part of Nocturne 24x7 Personal Assistant
  */
 
 // =============================================================================
@@ -136,7 +136,7 @@ function updateUI() {
     ${categoriesHtml}
     <div class="news-footer">
       <span>Last updated: ${new Date().toLocaleTimeString()}</span>
-      <button class="refresh-btn" onclick="window.overwatchModules?.news?.refresh?.()">↻ Refresh</button>
+      <button class="refresh-btn" onclick="window.nocturneModules?.news?.refresh?.()">↻ Refresh</button>
     </div>
   `;
 }
@@ -202,8 +202,8 @@ export function init(container) {
   refreshInterval = setInterval(refresh, config.refreshInterval);
   
   // Expose refresh function globally for UI button
-  if (!window.overwatchModules) window.overwatchModules = {};
-  window.overwatchModules.news = { refresh };
+  if (!window.nocturneModules) window.nocturneModules = {};
+  window.nocturneModules.news = { refresh };
 }
 
 export function destroy() {
@@ -212,8 +212,8 @@ export function destroy() {
     clearInterval(refreshInterval);
     refreshInterval = null;
   }
-  if (window.overwatchModules?.news) {
-    delete window.overwatchModules.news;
+  if (window.nocturneModules?.news) {
+    delete window.nocturneModules.news;
   }
 }
 
